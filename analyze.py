@@ -2,6 +2,7 @@ import os
 import argparse
 import time
 import numpy as np
+import re
 
 import config as cfg
 from metadata import grid
@@ -77,12 +78,13 @@ def getTimestamp(start, end):
     return start + '-' + end
 
 def decodeTimestamp(t):
+    
 
     start = t.split('-')[0].split(':')
     end = t.split('-')[1].split(':')
 
-    start_seconds = float(start[0]) * 3600 + float(start[1]) * 60 + float(start[2])
-    end_seconds = float(end[0]) * 3600 + float(end[1]) * 60 + float(end[2])
+    start_seconds = float(re.sub('e', '', start[0])) * 3600 + float(re.sub('e', '', start[1])) * 60 + float(re.sub('e', '', start[2]))
+    end_seconds = float(re.sub('e', '', end[0])) * 3600 + float(re.sub('e', '', end[1])) * 60 + float(re.sub('e', '', end[2]))
 
     return start_seconds, end_seconds
 
@@ -95,6 +97,36 @@ def getCode(label):
             return c
 
     return '????'
+
+
+def get_csv_table(p, path):
+    stable = ''
+    dlim = ','
+    header = f'Selection{dlim}View{dlim}Channel{dlim}Begin_File{dlim}Begin{dlim}End{dlim}Low_Freq{dlim}High_Freq{dlim}Species_Code{dlim}Name{dlim}Confidence{dlim}Rank{dlim}Overlap\n'
+    stable += header
+    selection_id = 0
+    for timestamp in sorted(p):
+        rstring = ''
+        start, end = decodeTimestamp(timestamp)
+        min_conf = 0
+        rank = 1
+        for c in p[timestamp]:
+            if c[1] > cfg.MIN_CONFIDENCE + min_conf and c[0] in cfg.WHITE_LIST:
+                selection_id += 1
+                rstring += f'{selection_id}{dlim}Spectogram_1{dlim}1{dlim}{path}{dlim}{start}{dlim}{end}{dlim}{cfg.SPEC_FMIN}{dlim}{cfg.SPEC_FMAX}{dlim}{getCode(c[0])}{dlim}{c[0].split("_")[1]}{dlim}{c[1]}{dlim}{rank}{dlim}{cfg.SPEC_OVERLAP}\n'
+                # rstring += str(selection_id) + '\tSpectrogram 1\t1\t' + path + '\t'
+                # rstring += str(start) + '\t' + str(end) + '\t' + str(cfg.SPEC_FMIN) + '\t' + str(cfg.SPEC_FMAX) + '\t'
+                # rstring += getCode(c[0]) + '\t' + c[0].split('_')[1] + '\t' + str(c[1]) + '\t' + str(rank) + '\n'
+                rank += 1
+            if rank > 3:
+                break
+
+        # Write result string to file
+        if len(rstring) > 0:
+            stable += rstring
+
+    return stable, selection_id
+
 
 def getRavenSelectionTable(p, path):
 
@@ -220,6 +252,7 @@ def process(soundscape, sid, out_dir, out_type, test_function):
 
     # Generate Raven selection table + Audacity text lables
     stable, dcnt = getRavenSelectionTable(p, soundscape.split(os.sep)[-1])
+    csv_stable, x = get_csv_table(p, soundscape.split(os.sep)[-1])
     atext = getAudacityLabels(p, soundscape.split(os.sep)[-1])
     log.p(('DETECTIONS:', dcnt), new_line=False)        
 
@@ -230,7 +263,8 @@ def process(soundscape, sid, out_dir, out_type, test_function):
     if out_type == 'raven':
         with open(os.path.join(out_dir, os.path.splitext(soundscape.split(os.sep)[-1])[0] + '.BirdNET.selections.txt'), 'w') as stfile:
             stfile.write(stable)
-
+        with open(os.path.join(out_dir, os.path.splitext(soundscape.split(os.sep)[-1])[0] + f'_{cfg.SPEC_OVERLAP}_.csv'), 'w') as csvfile:
+            csvfile.write(csv_stable)
     else:
         with open(os.path.join(out_dir, os.path.splitext(soundscape.split(os.sep)[-1])[0] + '.BirdNET.Audacity_Labels.txt'), 'w') as stfile:
             stfile.write(atext)        
@@ -239,7 +273,7 @@ def process(soundscape, sid, out_dir, out_type, test_function):
     t = time.time() - start
 
     # Stats
-    log.p(('TIME:', int(t)))
+    log.p(('TIME:', round(t,3)))
 
 def main():
 
