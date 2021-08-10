@@ -72,3 +72,5 @@ def setModelSettings(s):
     if 'im_size' in s:
         global IM_SIZE
         IM_SIZE = s['im_size']
+
+CSV_DLIM = ','
