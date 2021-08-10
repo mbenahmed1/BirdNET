@@ -260,14 +260,8 @@ def process(soundscape, sid, out_dir, out_type, test_function):
     if not os.path.exists(out_dir):
         os.makedirs(out_dir)
     
-    if out_type == 'raven':
-        with open(os.path.join(out_dir, os.path.splitext(soundscape.split(os.sep)[-1])[0] + '.BirdNET.selections.txt'), 'w') as stfile:
-            stfile.write(stable)
-        with open(os.path.join(out_dir, os.path.splitext(soundscape.split(os.sep)[-1])[0] + f'_{cfg.SPEC_OVERLAP}_.csv'), 'w') as csvfile:
-            csvfile.write(csv_stable)
-    else:
-        with open(os.path.join(out_dir, os.path.splitext(soundscape.split(os.sep)[-1])[0] + '.BirdNET.Audacity_Labels.txt'), 'w') as stfile:
-            stfile.write(atext)        
+    with open(os.path.join(out_dir, os.path.splitext(soundscape.split(os.sep)[-1])[0] + f'_{cfg.SPEC_OVERLAP}_.csv'), 'w') as csvfile:
+            csvfile.write(csv_stable)      
 
     # Time
     t = time.time() - start
