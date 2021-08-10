@@ -268,7 +268,7 @@ def analyzeFile(soundscape, test_function):
 ######################## MAIN ###########################
 
 
-def process(soundscape, sid, out_dir, out_type, test_function, start_time):
+def process(soundscape, sid, out_dir, out_type, test_function, start_time, write_csv_header):
 
     # Time
     start = time.time()
@@ -292,16 +292,13 @@ def process(soundscape, sid, out_dir, out_type, test_function, start_time):
     dt_string = start_time.strftime("%d_%m_%Y-%H:%M:%S")
     path_str =  f'{out_dir}{dt_string}-{cfg.SPEC_OVERLAP}_{cfg.SENSITIVITY}_{cfg.MIN_CONFIDENCE}.csv'
     csv_header = f'Selection{dlim}View{dlim}Channel{dlim}Begin_File{dlim}Begin{dlim}End{dlim}Low_Freq{dlim}High_Freq{dlim}Species_Code{dlim}Name{dlim}Confidence{dlim}Rank{dlim}Overlap\n'
-    csv_f = Path(path_str)
 
-    
-
-    if csv_f.is_file():
-        with open(path_str, 'a') as csvfile:
-            csvfile.write(csv_stable)
-    else:
+    if write_csv_header:
         with open(path_str, 'w') as csvfile:
             csvfile.write(csv_header)
+            csvfile.write(csv_stable)
+    else:
+        with open(path_str, 'a') as csvfile:
             csvfile.write(csv_stable)
 
     
@@ -339,7 +336,9 @@ def main():
                         help='Sigmoid sensitivity; Higher values result in lower sensitivity. Values in [0.25, 2.0]. Defaults to 1.0.')
     parser.add_argument('--min_conf', type=float, default=0.1,
                         help='Minimum confidence threshold. Values in [0.01, 0.99]. Defaults to 0.1.')
-
+    parser.add_argument('--csv-header', dest='write_csv_header', action='store_true',
+                        help='Defines if csv_header should be added to output file. Defaults to false.')
+    parser.set_defaults(write_csv_header=False)
     args=parser.parse_args()
 
     # Parse dataset
@@ -372,9 +371,13 @@ def main():
         path_str = ''
         for s in dataset:
             path_str = process(s, dataset.index(s) + 1, result_path,
-                    args.results, test_function, start_time)
-
-        log.p(('Writing results to file ', path_str), new_line=True)
+                    args.results, test_function, start_time, args.write_csv_header)
+        
+        if args.write_csv_header:
+            log.p(('WRITING CSV HEADER'), new_line=True)
+        else:
+            log.p(('NOT WRITING CSV HEADER - TYPE --csv-header TO ENABLE'), new_line=True)
+        log.p(('WRITING RESULTS TO FILE ', path_str), new_line=True)
 
 if __name__ == '__main__':
 
