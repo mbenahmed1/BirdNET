@@ -293,13 +293,24 @@ def process(soundscape, sid, out_dir, out_type, test_function, start_time, write
     path_str =  f'{out_dir}{dt_string}-{cfg.SPEC_OVERLAP}_{cfg.SENSITIVITY}_{cfg.MIN_CONFIDENCE}.csv'
     csv_header = f'Selection{dlim}View{dlim}Channel{dlim}Begin_File{dlim}Begin{dlim}End{dlim}Low_Freq{dlim}High_Freq{dlim}Species_Code{dlim}Name{dlim}Confidence{dlim}Rank{dlim}Overlap\n'
 
-    if write_csv_header:
-        with open(path_str, 'w') as csvfile:
-            csvfile.write(csv_header)
-            csvfile.write(csv_stable)
-    else:
+    csv_f = Path(path_str)
+
+
+
+    if csv_f.is_file():
         with open(path_str, 'a') as csvfile:
             csvfile.write(csv_stable)
+    else:
+        if write_csv_header:
+            with open(path_str, 'w') as csvfile:
+                csvfile.write(csv_header)
+                csvfile.write(csv_stable)
+        else:
+            with open(path_str, 'a') as csvfile:
+                csvfile.write(csv_stable)
+
+
+    
 
     
 
