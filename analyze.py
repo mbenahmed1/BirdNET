@@ -132,7 +132,7 @@ def get_csv_table(p, path):
                 # rstring += str(start) + '\t' + str(end) + '\t' + str(cfg.SPEC_FMIN) + '\t' + str(cfg.SPEC_FMAX) + '\t'
                 # rstring += getCode(c[0]) + '\t' + c[0].split('_')[1] + '\t' + str(c[1]) + '\t' + str(rank) + '\n'
                 rank += 1
-            if rank > 3:
+            if rank > 1:
                 break
 
         # Write result string to file
