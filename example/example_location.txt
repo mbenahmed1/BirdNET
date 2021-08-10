@@ -1,4 +1,0 @@
-Lat: 42.479
-Lon: -76.451
-
-Command: python analyze.py --i example --lat 42.479 --lon -76.451
