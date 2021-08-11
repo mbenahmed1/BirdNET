@@ -17,6 +17,10 @@ def openAudioFile(path, sample_rate=48000, offset=0.0, duration=None):
 
     return sig, rate
 
+def get_duration(path, sample_rate=48000, offset=0.0, duration=None):
+    sig, rate = openAudioFile(path, sample_rate=sample_rate, offset=offset, duration=None)
+    return librosa.get_duration(y=sig, sr=rate)
+
 def noise(sig, shape, amount=None):
 
     # Random noise intensity

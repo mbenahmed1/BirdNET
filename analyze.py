@@ -121,6 +121,8 @@ def get_csv_table(p, path):
     stable = ''
     dlim = cfg.CSV_DLIM
     selection_id = 0
+    start_times = []
+    end_times = []
     for timestamp in sorted(p):
         rstring = ''
         start, end = decodeTimestamp(timestamp)
@@ -130,9 +132,8 @@ def get_csv_table(p, path):
             if c[1] > cfg.MIN_CONFIDENCE + min_conf and c[0] in cfg.WHITE_LIST:
                 selection_id += 1
                 rstring += f'{selection_id}{dlim}Spectogram_1{dlim}1{dlim}{path}{dlim}{start}{dlim}{end}{dlim}{cfg.SPEC_FMIN}{dlim}{cfg.SPEC_FMAX}{dlim}{getCode(c[0])}{dlim}{c[0].split("_")[1]}{dlim}{c[1]}{dlim}{rank}{dlim}{cfg.SPEC_OVERLAP}\n'
-                # rstring += str(selection_id) + '\tSpectrogram 1\t1\t' + path + '\t'
-                # rstring += str(start) + '\t' + str(end) + '\t' + str(cfg.SPEC_FMIN) + '\t' + str(cfg.SPEC_FMAX) + '\t'
-                # rstring += getCode(c[0]) + '\t' + c[0].split('_')[1] + '\t' + str(c[1]) + '\t' + str(rank) + '\n'
+                start_times.append(start)
+                end_times.append(end)
                 rank += 1
             if rank > 1:
                 break
@@ -141,69 +142,8 @@ def get_csv_table(p, path):
         if len(rstring) > 0:
             stable += rstring
 
-    return stable, selection_id
+    return stable, selection_id, start_times, end_times
 
-
-def getRavenSelectionTable(p, path):
-
-    # Selection table
-    stable = ''
-
-    # Raven selection header
-    header = 'Selection\tView\tChannel\tBegin File\tBegin Time (s)\tEnd Time (s)\tLow Freq (Hz)\tHigh Freq (Hz)\tSpecies Code\tCommon Name\tConfidence\tRank\n'
-    selection_id = 0
-
-    # Write header
-    stable += header
-
-    # Extract valid predictions for every timestamp
-    for timestamp in sorted(p):
-        rstring = ''
-        start, end = decodeTimestamp(timestamp)
-        min_conf = 0
-        rank = 1
-        for c in p[timestamp]:
-            if c[1] > cfg.MIN_CONFIDENCE + min_conf and c[0] in cfg.WHITE_LIST:
-                selection_id += 1
-                rstring += str(selection_id) + \
-                               '\tSpectrogram 1\t1\t' + path + '\t'
-                rstring += str(start) + '\t' + str(end) + '\t' + \
-                               str(cfg.SPEC_FMIN) + '\t' + \
-                                   str(cfg.SPEC_FMAX) + '\t'
-                rstring += getCode(c[0]) + '\t' + c[0].split('_')[1] + \
-                                   '\t' + str(c[1]) + '\t' + str(rank) + '\n'
-                rank += 1
-            if rank > 3:
-                break
-
-        # Write result string to file
-        if len(rstring) > 0:
-            stable += rstring
-
-    return stable, selection_id
-
-
-def getAudacityLabels(p, path):
-
-    # Selection table
-    stext = ''
-
-    # Extract valid predictions for every timestamp
-    for timestamp in sorted(p):
-        rstring = ''
-        start, end = decodeTimestamp(timestamp)
-        min_conf = 0
-        for c in p[timestamp]:
-            if c[1] > cfg.MIN_CONFIDENCE + min_conf and c[0] in cfg.WHITE_LIST:
-                rstring += str(start) + '\t' + str(end) + '\t' + \
-                               c[0].split('_')[1] + ';' + \
-                                          str(int(c[1] * 100) / 100.0) + '\n'
-
-        # Write result string to file
-        if len(rstring) > 0:
-            stext += rstring
-
-    return stext
 
 ###################### ANALYSIS #########################
 
@@ -267,6 +207,9 @@ def analyzeFile(soundscape, test_function):
 
     return analysis
 
+def patches_consequtive(start, end, duration, delta):
+    return abs(start - end) < (duration + delta)
+
 ######################## MAIN ###########################
 
 
@@ -280,10 +223,9 @@ def process(soundscape, sid, out_dir, out_type, test_function, start_time, write
     # Analyze file
     p = analyzeFile(soundscape, test_function)
 
-    # Generate Raven selection table + Audacity text lables
-    stable, dcnt = getRavenSelectionTable(p, soundscape.split(os.sep)[-1])
-    csv_stable, x = get_csv_table(p, soundscape.split(os.sep)[-1])
-    log.p(('DETECTIONS:', dcnt), new_line=False)
+    # Generate csv table
+    csv_stable, x, start_times, end_times = get_csv_table(p, soundscape.split(os.sep)[-1])
+    log.p(('DETECTIONS:', x), new_line=False)
 
     # Save results
     if not os.path.exists(out_dir):
@@ -297,8 +239,6 @@ def process(soundscape, sid, out_dir, out_type, test_function, start_time, write
 
     csv_f = Path(path_str)
 
-
-
     if csv_f.is_file():
         with open(path_str, 'a') as csvfile:
             csvfile.write(csv_stable)
@@ -310,12 +250,19 @@ def process(soundscape, sid, out_dir, out_type, test_function, start_time, write
         else:
             with open(path_str, 'a') as csvfile:
                 csvfile.write(csv_stable)
+    
+    duration = audio.get_duration(soundscape)
+    
+    start_times.sort()
+    end_times.sort()
 
+    consequtive_patches = []
+    patch = []
 
     
 
-    
 
+    print(start_times)
     # Time
     t=time.time() - start
 

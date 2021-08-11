@@ -74,3 +74,5 @@ def setModelSettings(s):
         IM_SIZE = s['im_size']
 
 CSV_DLIM = ','
+MAX_SPEC_LEN = 3.0
+SPEC_TIME_DELTA = 0.0005
