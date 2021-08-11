@@ -95,13 +95,15 @@ def decodeTimestamp(t):
 
     start = t.split('-')[0].split(':')
     end = t.split('-')[1].split(':')
-
-    start_seconds = float(re.sub('e', '', start[0])) * 3600 + float(
-        re.sub('e', '', start[1])) * 60 + float(re.sub('e', '', start[2]))
-    end_seconds = float(re.sub('e', '', end[0])) * 3600 + float(
-        re.sub('e', '', end[1])) * 60 + float(re.sub('e', '', end[2]))
-
-    return start_seconds, end_seconds
+   
+    if len(end) == 3 and len(start) == 3:
+        start_seconds = float(re.sub('e', '', start[0])) * 3600 + float(
+            re.sub('e', '', start[1])) * 60 + float(re.sub('e', '', start[2]))
+        end_seconds = float(re.sub('e', '', end[0])) * 3600 + float(
+            re.sub('e', '', end[1])) * 60 + float(re.sub('e', '', end[2]))
+        return start_seconds, end_seconds
+    else:
+        return -1, -1
 
 
 def getCode(label):
