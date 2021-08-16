@@ -39,7 +39,7 @@ def process_file(path):
             break
         for i in range(int(abs(float(end) - float(start)) * POINTSPERSEC)):
             end += pow(10, -POINTSPERSEC)
-            f'{selection_id}{cfg.CSV_DLIM}Spectogram_1{cfg.CSV_DLIM}1{cfg.CSV_DLIM}{path}{cfg.CSV_DLIM}{start}{cfg.CSV_DLIM}{end}{cfg.CSV_DLIM}{cfg.SPEC_FMIN}{cfg.CSV_DLIM}{cfg.SPEC_FMAX}{cfg.CSV_DLIM}{getCode(c[0])}{cfg.CSV_DLIM}{c[0].split("_")[1]}{cfg.CSV_DLIM}{c[1]}{cfg.CSV_DLIM}{rank}{cfg.CSV_DLIM}{cfg.SPEC_OVERLAP}\n'
+            f'{selection_id}{cfg.CSV_DLIM}Spectogram_1{cfg.CSV_DLIM}1{cfg.CSV_DLIM}{path}{cfg.CSV_DLIM}{start}{cfg.CSV_DLIM}{end}{cfg.CSV_DLIM}{-1}{cfg.CSV_DLIM}{-1}{cfg.CSV_DLIM}{getCode(c[0])}{cfg.CSV_DLIM}{c[0].split("_")[1]}{cfg.CSV_DLIM}{c[1]}{cfg.CSV_DLIM}{rank}{cfg.CSV_DLIM}{cfg.SPEC_OVERLAP}\n'
             start += pow(10, -POINTSPERSEC)
             selection_id += 1
         print(f'Added annotation between {str(start)} and {str(end)}.')
