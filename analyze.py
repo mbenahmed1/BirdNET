@@ -15,6 +15,8 @@ from utils import log
 import warnings
 warnings.filterwarnings('ignore')
 
+
+ROUNDDIGITS = 3
 ################### DATASAT HANDLING ####################
 
 
@@ -131,7 +133,7 @@ def get_csv_table(p, path):
         for c in p[timestamp]:
             if c[1] > cfg.MIN_CONFIDENCE + min_conf and c[0] in cfg.WHITE_LIST:
                 selection_id += 1
-                rstring += f'{selection_id}{dlim}Spectogram_1{dlim}1{dlim}{path}{dlim}{start}{dlim}{end}{dlim}{cfg.SPEC_FMIN}{dlim}{cfg.SPEC_FMAX}{dlim}{getCode(c[0])}{dlim}{c[0].split("_")[1]}{dlim}{c[1]}{dlim}{rank}{dlim}{cfg.SPEC_OVERLAP}\n'
+                rstring += f'{selection_id}{dlim}Spectogram_1{dlim}1{dlim}{path}{dlim}{round(start, ROUNDDIGITS)}{dlim}{round(end, ROUNDDIGITS)}{dlim}{cfg.SPEC_FMIN}{dlim}{cfg.SPEC_FMAX}{dlim}{getCode(c[0])}{dlim}{c[0].split("_")[1]}{dlim}{c[1]}{dlim}{rank}{dlim}{cfg.SPEC_OVERLAP}\n'
                 start_times.append(start)
                 end_times.append(end)
                 rank += 1
