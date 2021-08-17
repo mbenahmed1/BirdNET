@@ -259,10 +259,6 @@ def process(soundscape, sid, out_dir, out_type, test_function, start_time, write
     consequtive_patches = []
     patch = []
 
-    
-
-
-    print(start_times)
     # Time
     t=time.time() - start
 
@@ -289,7 +285,7 @@ def main():
     parser.add_argument('--week', type=int, default=-1,
                         help='Week of the year when the recordings were made. Values in [1, 48]. Set -1 to ignore.')
     parser.add_argument('--overlap', type=float, default=0.0,
-                        help='Overlap in seconds between extracted spectrograms. Values in [0.0, 2.9].')
+                        help='Overlap in seconds between extracted spectrograms. Values in [0.0, 2.999].')
     parser.add_argument('--spp', type=int, default=1,
                         help='Combines probabilities of multiple spectrograms to one prediction. Defaults to 1.')
     parser.add_argument('--sensitivity', type=float, default=1.0,
@@ -314,7 +310,7 @@ def main():
         # Adjust config
         cfg.DEPLOYMENT_LOCATION=(args.lat, args.lon)
         cfg.DEPLOYMENT_WEEK=args.week
-        cfg.SPEC_OVERLAP=min(2.9, max(0.0, args.overlap))
+        cfg.SPEC_OVERLAP=min(2.999, max(0.0, args.overlap))
         cfg.SPECS_PER_PREDICTION=max(1, args.spp)
         cfg.SENSITIVITY=max(min(-0.25, args.sensitivity * -1), -2.0)
         cfg.MIN_CONFIDENCE=min(0.99, max(0.01, args.min_conf))
