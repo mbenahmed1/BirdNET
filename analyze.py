@@ -137,7 +137,7 @@ def get_csv_table(p, path):
                 start_times.append(start)
                 end_times.append(end)
                 rank += 1
-            if rank > 1:
+            if rank > 5:
                 break
 
         # Write result string to file
