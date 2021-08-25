@@ -248,9 +248,9 @@ def process(soundscape, sid, out_dir, out_type, test_function, start_time, write
     log.p(('TIME:', round(t, 3)))
 
     meta_path_str = f'{out_dir}meta.csv'
-    meta_csv_header = f'File{dlim}Processing_time{dlim}Duration\n'
+    meta_csv_header = f'File{dlim}Processing_time{dlim}Duration{dlim}Overlap\n'
 
-    meta_table = f'{soundscape.split(os.sep)[-1]}{dlim}{t}{dlim}{duration}\n'
+    meta_table = f'{soundscape.split(os.sep)[-1]}{dlim}{t}{dlim}{duration}{dlim}{cfg.SPEC_OVERLAP}\n'
 
     meta_csv_f = Path(meta_path_str)
     csv_f = Path(path_str)
