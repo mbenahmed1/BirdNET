@@ -239,6 +239,20 @@ def process(soundscape, sid, out_dir, out_type, test_function, start_time, write
     path_str =  f'{out_dir}{dt_string}-{cfg.SPEC_OVERLAP}_{cfg.SENSITIVITY}_{cfg.MIN_CONFIDENCE}.csv'
     csv_header = f'Selection{dlim}View{dlim}Channel{dlim}Begin_File{dlim}Begin{dlim}End{dlim}Low_Freq{dlim}High_Freq{dlim}Species_Code{dlim}Name{dlim}Confidence{dlim}Rank{dlim}Overlap\n'
 
+    duration = audio.get_duration(soundscape)
+
+    # Time
+    t=time.time() - start
+
+    # Stats
+    log.p(('TIME:', round(t, 3)))
+
+    meta_path_str = f'{out_dir}meta.csv'
+    meta_csv_header = f'File{dlim}Processing_time{dlim}Duration\n'
+
+    meta_table = f'{soundscape.split(os.sep)[-1]}{dlim}{t}{dlim}{duration}\n'
+
+    meta_csv_f = Path(meta_path_str)
     csv_f = Path(path_str)
 
     if csv_f.is_file():
@@ -252,20 +266,24 @@ def process(soundscape, sid, out_dir, out_type, test_function, start_time, write
         else:
             with open(path_str, 'a') as csvfile:
                 csvfile.write(csv_stable)
-    
-    duration = audio.get_duration(soundscape)
-    
-    start_times.sort()
-    end_times.sort()
 
-    consequtive_patches = []
-    patch = []
 
-    # Time
-    t=time.time() - start
+    if meta_csv_f.is_file():
+        with open(meta_path_str, 'a') as meta_file:
+            meta_file.write(meta_table)
+    else:
+        log.p(('CREATING NEW META-INFO FILE ', meta_path_str), new_line=True)
+        if write_csv_header:
+            with open(meta_path_str, 'a') as meta_file:
+                log.p(('WRITING CSV HEADER'), new_line=True)
+                meta_file.write(meta_csv_header)
+                meta_file.write(meta_table)
+        else:
+            with open(meta_path_str, 'a') as meta_file:
+                log.p(('NOT WRITING CSV HEADER - TYPE --csv-header TO ENABLE'), new_line=True)
+                meta_file.write(meta_table)
 
-    # Stats
-    log.p(('TIME:', round(t, 3)))
+    log.p(('WRITING META-INFO TO FILE ', meta_path_str), new_line=True)
 
     return path_str
 
