@@ -236,7 +236,7 @@ def process(soundscape, sid, out_dir, out_type, test_function, start_time, write
     dlim = cfg.CSV_DLIM
     
     dt_string = start_time.strftime("%d_%m_%Y-%H:%M:%S")
-    path_str =  f'{out_dir}{dt_string}-{cfg.SPEC_OVERLAP}_{cfg.SENSITIVITY}_{cfg.MIN_CONFIDENCE}.csv'
+    path_str =  f'{out_dir}_{dt_string}-{cfg.SPEC_OVERLAP}_{cfg.SENSITIVITY}_{cfg.MIN_CONFIDENCE}.csv'
     csv_header = f'Selection{dlim}View{dlim}Channel{dlim}Begin_File{dlim}Begin{dlim}End{dlim}Low_Freq{dlim}High_Freq{dlim}Species_Code{dlim}Name{dlim}Confidence{dlim}Rank{dlim}Overlap\n'
 
     duration = audio.get_duration(soundscape)
@@ -247,7 +247,7 @@ def process(soundscape, sid, out_dir, out_type, test_function, start_time, write
     # Stats
     log.p(('TIME:', round(t, 3)))
 
-    meta_path_str = f'{out_dir}meta.csv'
+    meta_path_str = f'{out_dir}_meta.csv'
     meta_csv_header = f'File{dlim}Processing_time{dlim}Duration{dlim}Overlap\n'
 
     meta_table = f'{soundscape.split(os.sep)[-1]}{dlim}{t}{dlim}{duration}{dlim}{cfg.SPEC_OVERLAP}\n'
