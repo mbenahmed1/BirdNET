@@ -46,7 +46,6 @@ def process_file(path):
         for i in range(int(abs(end - float(start)) * POINTSPERSEC)):
             lines += f'{selection_id}{cfg.CSV_DLIM}Spectogram_1{cfg.CSV_DLIM}1{cfg.CSV_DLIM}{path}{cfg.CSV_DLIM}{start}{cfg.CSV_DLIM}{round(float(start) + FRAMESIZE, ROUNDDIGITS)}{cfg.CSV_DLIM}{-1}{cfg.CSV_DLIM}{-1}{cfg.CSV_DLIM}{code}{cfg.CSV_DLIM}{path}{cfg.CSV_DLIM}1.0{cfg.CSV_DLIM}1{cfg.CSV_DLIM}{cfg.SPEC_OVERLAP}\n'
             start = float(start)
-            print(1/POINTSPERSEC)
             start += 1/POINTSPERSEC
             start = round(start, ROUNDDIGITS)
             selection_id += 1
