@@ -57,7 +57,7 @@ def process_file(path):
 path_str = sys.argv[-1]
 csv_f = Path(path_str)
 
-if len(sys.argv[1:]) + 1 == 3:
+if len(sys.argv[1:]) >= 3:
     for p in sys.argv[1:-1]:
         lines = process_file(p)
         if csv_f.is_file():
